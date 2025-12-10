@@ -5,7 +5,8 @@ import { NavLink } from 'react-router';
 const Navbar = () => {
     const links = <>
         <li><NavLink to=''>Service</NavLink></li>
-        <li><a>Item 3</a></li>
+        <li><NavLink to=''>About Us</NavLink></li>
+        <li><NavLink to='/coverage'>Coverage</NavLink></li>
     </>
     return (
         <div className="navbar bg-base-100 shadow-sm">
