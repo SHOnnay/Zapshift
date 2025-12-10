@@ -5,7 +5,10 @@ import { NavLink } from 'react-router';
 const Navbar = () => {
     const links = <>
         <li><NavLink to=''>Service</NavLink></li>
-        <li><NavLink to=''>About Us</NavLink></li>
+        <li><NavLink to='/aboutus'
+            className={({ isActive }) =>
+                isActive ? "font-bold text-primary" : "font-normal"
+            }>About Us</NavLink></li>
         <li><NavLink to='/coverage'>Coverage</NavLink></li>
     </>
     return (
