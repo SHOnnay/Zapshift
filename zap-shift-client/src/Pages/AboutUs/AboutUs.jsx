@@ -27,7 +27,9 @@ const AboutUs = () => {
               e.preventDefault();
               setActive(tab.key);
             }}
-            className={`tab ${active === tab.key ? "tab-active font-bold" : ""}`}
+            className={`tab ${active === tab.key ? "tab-active font-bold" : ""}focus:outline-none focus:bg-transparent active:bg-transparent
+
+`}
           >
             {tab.label}
           </a>

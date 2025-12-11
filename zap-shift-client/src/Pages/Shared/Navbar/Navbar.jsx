@@ -3,14 +3,22 @@ import Logo from '../../../Components/Logo';
 import { NavLink } from 'react-router';
 
 const Navbar = () => {
+
+    const navItemStyle = ({ isActive }) =>
+        `px-3 py-1 transition
+    font-bold
+    ${isActive ? "font-bold text-sky-600" : "font-medium"}
+    hover:text-sky-700 focus:text-sky-500 active:text-sky-800
+    focus:bg-transparent active:bg-transparent`;
+
+
     const links = <>
-        <li><NavLink to=''>Service</NavLink></li>
-        <li><NavLink to='/aboutus'
-            className={({ isActive }) =>
-                isActive ? "font-bold text-primary" : "font-normal"
-            }>About Us</NavLink></li>
-        <li><NavLink to='/coverage'>Coverage</NavLink></li>
+        <li><NavLink to="/" className={navItemStyle}>Service</NavLink></li>
+        <li><NavLink to="/aboutus" className={navItemStyle}>About Us</NavLink></li>
+        <li><NavLink to="/coverage" className={navItemStyle}>Coverage</NavLink></li>
+
     </>
+
     return (
         <div className="navbar bg-base-100 shadow-sm">
             <div className="navbar-start">
