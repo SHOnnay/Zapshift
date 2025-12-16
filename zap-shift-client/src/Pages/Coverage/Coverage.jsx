@@ -24,12 +24,12 @@ const Coverage = () => {
     }
 
     return (
-        <div>
-            <h3>We are available in 64 districts</h3>
+        <div className='mb-10'>
+            <h3 className='text-center text-3xl mt-10 mb-10 font-extrabold text-secondary'>We are available in 64 districts!</h3>
             <div>
                 {/* search */}
                 <form onSubmit={handleSearch}>
-                    <label className="input">
+                    <label className="input mb-10 flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 w-1/3 mx-auto shadow-xl">
                         <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <g
                                 strokeLinejoin="round"
@@ -46,7 +46,7 @@ const Coverage = () => {
                     </label>
                 </form>
             </div>
-            <div>
+            <div className='rounded-3xl overflow-hidden shadow-xl'>
                 <MapContainer center={position} zoom={8} scrollWheelZoom={false} style={{ height: "500px", width: "100%" }}
                 ref={mapRef}>
                     <TileLayer

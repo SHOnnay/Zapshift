@@ -1,8 +1,19 @@
 import React from 'react';
 import Logo from '../../../Components/Logo';
-import { NavLink } from 'react-router';
+import { Link, NavLink } from 'react-router';
+import useAuth from '../../../hooks/useAuth';
 
 const Navbar = () => {
+
+    const { user, logOutUser } = useAuth();
+
+    const handleLogOut = () => {
+        logOutUser()
+            .then(() => { })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    }
 
     const navItemStyle = ({ isActive }) =>
         `px-3 py-1 transition
@@ -15,12 +26,13 @@ const Navbar = () => {
     const links = <>
         <li><NavLink to="/" className={navItemStyle}>Service</NavLink></li>
         <li><NavLink to="/aboutus" className={navItemStyle}>About Us</NavLink></li>
+        <li><NavLink to="/send-parcel" className={navItemStyle}>Send Parcel</NavLink></li>
         <li><NavLink to="/coverage" className={navItemStyle}>Coverage</NavLink></li>
 
     </>
 
     return (
-        <div className="navbar bg-base-100 shadow-sm">
+        <div className="navbar bg-base-100 shadow mb-8 rounded-2xl">
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -42,10 +54,16 @@ const Navbar = () => {
                 </ul>
             </div>
             <div className="navbar-end">
-                <a className="btn">Button</a>
+                {
+                    user ?
+                        <a onClick={handleLogOut} className="btn">Log Out</a> :
+                        <Link to='/login' className="btn">Login</Link>
+                }
+                <Link to='/rider' className="btn btn-primary text-black mx-4">Be a Rider</Link>
+
             </div>
         </div>
     );
-};
+}; 
 
 export default Navbar;
