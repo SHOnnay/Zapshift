@@ -26,9 +26,14 @@ const Navbar = () => {
     const links = <>
         <li><NavLink to="/" className={navItemStyle}>Service</NavLink></li>
         <li><NavLink to="/aboutus" className={navItemStyle}>About Us</NavLink></li>
-        <li><NavLink to="/send-parcel" className={navItemStyle}>Send Parcel</NavLink></li>
+        <li><NavLink to="/sendparcel" className={navItemStyle}>Send Parcel</NavLink></li>
+        <li><NavLink to="/rider" className={navItemStyle}>Be a Rider</NavLink></li>
         <li><NavLink to="/coverage" className={navItemStyle}>Coverage</NavLink></li>
 
+        {
+            user &&
+            <li><NavLink to="/dashboard/my-parcels" className={navItemStyle}>My Parcels</NavLink></li>
+        }
     </>
 
     return (
@@ -44,9 +49,9 @@ const Navbar = () => {
                         {links}
                     </ul>
                 </div>
-                <a className="btn btn-ghost text-xl">
+                <div to="/" className="btn btn-ghost text-xl">
                     <Logo></Logo>
-                </a>
+                </div>
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="menu menu-horizontal px-1">
@@ -64,6 +69,6 @@ const Navbar = () => {
             </div>
         </div>
     );
-}; 
+};
 
 export default Navbar;

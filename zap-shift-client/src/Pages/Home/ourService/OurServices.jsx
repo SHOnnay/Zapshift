@@ -33,7 +33,7 @@ const OurServices = () => {
 
 
     return (
-        <Cards title='our services' description='We provide a wide range of services to meet your logistics needs.'>
+        <Cards title='Our Services' description='We provide a wide range of services to meet your logistics needs.'>
             {cardData.map((card, index) => (
                 <ServiceCard key={index} title={card.title} description={card.description} />
             ))}

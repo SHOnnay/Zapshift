@@ -1,5 +1,5 @@
 import React, { use } from 'react';
-import { Autoplay, EffectCoverflow, Pagination } from 'swiper/modules';
+import { Autoplay, EffectCards, EffectCoverflow, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import ReviewCard from './ReviewCard';
 
@@ -9,39 +9,35 @@ const Reviews = ({ reviewsPromise }) => {
     return (
         <div className='my-24'>
             <div className='text-center mb-24'>
-                <h3 className='text-3xl text-center font-bold my-8'>review</h3>
-                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto ipsam nemo natus quaerat, aliquam dolorem amet est laborum maxime libero fugit hic autem expedita itaque? Magni nisi velit vitae odit?</p>
+                <h3 className='text-3xl text-center text-secondary font-bold my-8'>What our customers are sayings</h3>
+                <p>Enhance posture, mobility, and well-being effortlessly with Posture Pro. Achieve proper alignment, reduce pain, and strengthen your body with ease!</p>
             </div>
-                <Swiper
+            <Swiper
                 loop={true}
-                    effect={'coverflow'}
-                    grabCursor={true}
-                    centeredSlides={true}
-                    slidesPerView={3}
-                    coverflowEffect={{
-                        rotate: 30,
-                        stretch: '50%',
-                        depth: 200,
-                        scale: 0.75,
-                        modifier: 1,
-                        slideShadows: true,
-                    }}
-                    autoplay={{
-                        delay: 2000,
-                        disableOnInteraction: false,
-                    }}
-                    pagination={true}
-                    modules={[EffectCoverflow, Pagination, Autoplay]}
-                    className="mySwiper"
-                >
-                    {
-                        reviews.map((review, index) => (
-                            <SwiperSlide key={index}>
-                                <ReviewCard review={review}></ReviewCard>
-                            </SwiperSlide>
-                        ))
-                    }
-                </Swiper>
+                centeredSlides={true}
+                slidesPerView={1.2}
+                spaceBetween={40}
+                speed={800}
+                autoplay={{
+                    delay: 2000,
+                    disableOnInteraction: false,
+                }}
+                pagination={{ clickable: true }}
+                breakpoints={{
+                    768: { slidesPerView: 2.2 },
+                    1024: { slidesPerView: 3 },
+                }}
+                modules={[Pagination, Autoplay]}
+                className="py-20"
+            >
+                {reviews.map((review, index) => (
+                    <SwiperSlide key={index}>
+                        <div className="review-slide">
+                            <ReviewCard review={review} />
+                        </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
         </div>
     );
 };

@@ -9,6 +9,15 @@ import Register from "../Pages/Auth/Register/Register";
 import PrivateRoute from "./PrivateRoute";
 import Rider from "../Pages/Rider/Rider";
 import SendParcel from "../Pages/SendParcel/SendParcel";
+import DashboardLayout from "../Layouts/DashboardLayout";
+import MyParcels from "../Pages/Dashboard/MyParcels/MyParcels";
+import Payment from "../Pages/Dashboard/Payment/Payment";
+import PaymentSuccess from "../Pages/Dashboard/Payment/PaymentSuccess";
+import PaymentCancelled from "../Pages/Dashboard/Payment/PaymentCancelled";
+import PaymentHistory from "../Pages/Dashboard/Payment/PaymentHistory/PaymentHistory";
+import ApproveRiders from "../Pages/Dashboard/ApproveRiders/ApproveRiders";
+import UsersManagement from "../Pages/Dashboard/UsersManagement/UsersManagement";
+
 
 export const router = createBrowserRouter([
     {
@@ -21,11 +30,13 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'rider',
-                element: <PrivateRoute><Rider></Rider></PrivateRoute>
+                element: <PrivateRoute><Rider></Rider></PrivateRoute>,
+                loader: () => fetch('/serviceCenters.json').then(res => res.json())
             },
             {
                 path: 'sendparcel',
-                element: <PrivateRoute><SendParcel></SendParcel></PrivateRoute>
+                element: <PrivateRoute><SendParcel></SendParcel></PrivateRoute>,
+                loader: () => fetch('/serviceCenters.json').then(res => res.json())
             },
             {
                 path: '/coverage',
@@ -52,5 +63,40 @@ export const router = createBrowserRouter([
                 Component: Register
             }
         ]
-    }
+    },
+    {
+        path: 'dashboard',
+        element: <PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
+        children: [
+            // Add dashboard routes here
+            {
+                path: 'my-parcels',
+                Component: MyParcels,
+            },
+            {
+                path: 'payment/:parcelId',
+                Component: Payment,
+            },
+            {
+                path: 'payment-history',
+                Component: PaymentHistory,
+            },
+            {
+                path: 'payment-success',
+                Component: PaymentSuccess,
+            },
+            {
+                path: 'payment-cancelled',
+                Component: PaymentCancelled,
+            },
+            {
+                path: 'approve-riders',
+                Component: ApproveRiders,
+            },
+            {
+                path: 'users-management',
+                Component: UsersManagement,
+            }
+        ]
+    },
 ]);
