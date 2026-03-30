@@ -101,7 +101,7 @@ async function run() {
             const log = {
                 trackingId,
                 status,
-                details: status.split('_').join(' '),
+                details: status.split('-').join(' '),
                 createdAt: new Date(),
             }
             const result = await trackingsCollection.insertOne(log);
@@ -223,37 +223,13 @@ async function run() {
             }
         });
 
-        app.get('/parcels/delivery-status/stats', async (req, res) => {
-            const pipeline = [
-                {
-                    $group: {
-                        _id: "$deliveryStatus",
-                        count: { $sum: 1 }
-                    }
-                },
-                {
-                    $project: {
-                        status: "$_id",
-                        count: 1,
-                        _id: 0
-                    }
-                }
-            ];
-            const result = await parcelsCollection.aggregate(pipeline).toArray();
-            res.send(result);
-
-        });
 
         app.post('/parcels', async (req, res) => {
             const parcel = req.body;
-            const trackingId = generateTrackingId();
             // add createdAt property to parcel
             parcel.createdAt = new Date();
-            parcel.trackingId = trackingId;
             parcel.paymentStatus = 'unpaid';
             parcel.deliveryStatus = 'not-paid';
-
-            logTracking(trackingId, 'parcel_created');
 
             const result = await parcelsCollection.insertOne(parcel);
             res.send(result);
@@ -355,8 +331,7 @@ async function run() {
                     }],
                     mode: 'payment',
                     metadata: {
-                        parcelId: paymentInfo.parcelId,
-                        trackingId: paymentInfo.trackingId,
+                        parcelId: paymentInfo.parcelId
                     },
                     customer_email: paymentInfo.senderEmail,
                     success_url: `${process.env.SITE_DOMAIN}/dashboard/payment-success?session_id={CHECKOUT_SESSION_ID}`,
@@ -424,8 +399,8 @@ async function run() {
                 return res.send({ success: true, message: 'Payment already processed.', transactionId: transactionId });
             }
 
-            //using trackingId from metadata to log tracking info when payment is successful
-            const trackingId = session.metadata.trackingId;
+
+            const trackingId = generateTrackingId();
 
             if (session.payment_status === 'paid') {
                 const id = session.metadata.parcelId;
@@ -434,7 +409,8 @@ async function run() {
                 const update = {
                     $set: {
                         paymentStatus: 'paid',
-                        deliveryStatus: 'pending-pickup'
+                        deliveryStatus: 'pending-pickup',
+                        trackingId: trackingId,
                     }
                 }
                 const result = await parcelsCollection.updateOne(query, update);
@@ -454,7 +430,7 @@ async function run() {
                 if (session.payment_status === 'paid') {
                     const resultPayment = await paymentsCollection.insertOne(payment);
 
-                    await logTracking(trackingId, 'parcel_paid');
+                    await logTracking(trackingId, 'pending-pickup');
 
                     res.send({
                         success: true,
@@ -513,48 +489,6 @@ async function run() {
             res.send(result);
         });
 
-        app.get('/riders/delivery-per-day', async (req, res) => {
-            const email = req.query.email;
-            const pipeline = [
-                {
-                    $match: {
-                        riderEmail: email,
-                        deliveryStatus: 'parcel_delivered'
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'trackings',
-                        localField: 'trackingId',
-                        foreignField: 'trackingId',
-                        as: 'parcel_trackings'
-                    }
-                },
-                {
-                    $unwind: '$parcel_trackings'
-                },
-                {
-                    $match: {
-                        'parcel_trackings.status': 'parcel_delivered'
-                    }
-                },
-                {
-                    //convert timestamp to date string
-                    $addFields: {
-                        deliveredDate: {
-                            $dateToString: {
-                                format: "%Y-%m-%d",
-                                date: "$parcel_trackings.createdAt"
-                            }
-                        }
-                    }
-                }
-            ];
-
-            const result = await parcelsCollection.aggregate(pipeline).toArray();
-            res.send(result);
-        });
-
         app.post('/riders', async (req, res) => {
             const rider = req.body;
             rider.status = 'pending';
@@ -596,14 +530,6 @@ async function run() {
                 }
             }
 
-            res.send(result);
-        });
-
-        //tracking related API
-        app.get('/trackings/:trackingId/logs', async (req, res) => {
-            const trackingId = req.params.trackingId;
-            const query = { trackingId };
-            const result = await trackingsCollection.find(query).sort({ createdAt: 1 }).toArray();
             res.send(result);
         });
 

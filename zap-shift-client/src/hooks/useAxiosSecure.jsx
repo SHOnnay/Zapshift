@@ -1,51 +1,52 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import useAuth from './useAuth';
 import { useNavigate } from 'react-router';
 
-
 const axiosSecure = axios.create({
-    baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:3000',
 });
 
 const useAxiosSecure = () => {
+  const { user, logOutUser } = useAuth();
+  const navigate = useNavigate();
 
-    const { user, logOutUser } = useAuth();
-    const navigate = useNavigate();
+  useEffect(() => {
+    if (!user) return;
 
-    //interecptor to attach token to every request
-    const reqInterceptor = useEffect(() => {
-        axiosSecure.interceptors.request.use(config => {
-            config.headers.authorization = `Bearer ${user?.accessToken}`;
-            return config;
-        });
+    // request interceptor
+    const reqInterceptor = axiosSecure.interceptors.request.use(
+      async (config) => {
+        // get fresh Firebase ID token
+        const idToken = await user.getIdToken();
+        config.headers.Authorization = `Bearer ${idToken}`;
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
 
-        //interceptor to handle unauthorized responses
-        const resInterceptor = axiosSecure.interceptors.response.use(
-            response => response,
-            error => {
-                
-                const statusCode = error.response?.status;
-                if (statusCode === 401 || statusCode === 403) {
-                    logOutUser().then(() => {
-                        navigate('/login');
-                    }).catch(err => {
-                        console.error('Error during logout:', err);
-                    });
-                }
+    // response interceptor
+    const resInterceptor = axiosSecure.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const status = error.response?.status;
+        if (status === 401 || status === 403) {
+          logOutUser()
+            .then(() => navigate('/login'))
+            .catch((err) => console.error('Error during logout:', err));
+        }
+        return Promise.reject(error);
+      }
+    );
 
-                return Promise.reject(error);
-            }
-        );
+    // cleanup interceptors on unmount
+    return () => {
+      axiosSecure.interceptors.request.eject(reqInterceptor);
+      axiosSecure.interceptors.response.eject(resInterceptor);
+    };
+  }, [user, logOutUser, navigate]);
 
-        return () => {
-            axiosSecure.interceptors.request.eject(reqInterceptor);
-            axiosSecure.interceptors.response.eject(resInterceptor);
-        };
-
-    }, [user, logOutUser, navigate]);
-
-    return axiosSecure;
+  return axiosSecure;
 };
 
 export default useAxiosSecure;
