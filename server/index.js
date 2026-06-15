@@ -33,12 +33,63 @@ function generateTrackingId() {
 
 //middleware
 const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    ...(process.env.SITE_DOMAIN || '').split(',').map(origin => origin.trim()).filter(Boolean),
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://zap-shift-8e3a6.web.app',
+  ...(process.env.SITE_DOMAIN || '')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean),
 ];
 
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
+app.options('*', cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
 app.use(express.json());
+
+app.post('/debug-post', (req, res) => {
+    res.send({ ok: true, message: 'POST route is working', body: req.body });
+});
+
+app.get('/debug-get', (req, res) => {
+    res.send({ ok: true, message: 'GET route is working' });
+});
+
+app.post('/users', async (req, res) => {
+  try {
+    const db = client.db("zap_shift_db");
+    const userCollection = db.collection("users");
+
+    const user = req.body;
+
+    if (!user?.email) {
+      return res.status(400).send({ message: 'Email is required' });
+    }
+
+    const userExist = await userCollection.findOne({ email: user.email });
+
+    if (userExist) {
+      return res.send({ message: 'User already exists' });
+    }
+
+    user.role = 'user';
+    user.createdAt = new Date();
+
+    const result = await userCollection.insertOne(user);
+    res.send(result);
+  } catch (error) {
+    console.error('POST /users error:', error);
+    res.status(500).send({ message: error.message });
+  }
+});
+
 app.use(cors({
     origin(origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
@@ -643,3 +694,11 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
+
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(port, () => {
+        console.log(`Example app listening at http://localhost:${port}`);
+    });
+}
+
+module.exports = app;

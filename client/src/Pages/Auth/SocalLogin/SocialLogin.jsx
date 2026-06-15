@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 import { useLocation, useNavigate } from 'react-router';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import useAxiosPublic from '../../../hooks/useAxiosPublic';
 import { FcGoogle } from 'react-icons/fc';
 
 const SocialLogin = () => {
     const { signInGoogle } = useAuth();
-    const axiosSecure = useAxiosSecure();
+    const axiosPublic = useAxiosPublic();
     const location = useLocation();
     const navigate = useNavigate();
     const [error, setError] = useState('');
@@ -18,7 +18,6 @@ const SocialLogin = () => {
 
         try {
             const result = await signInGoogle();
-            const token = await result.user.getIdToken();
 
             const userInfo = {
                 displayName: result.user.displayName,
@@ -26,14 +25,12 @@ const SocialLogin = () => {
                 photoURL: result.user.photoURL,
             };
 
-            await axiosSecure.post('/users', userInfo, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await axiosPublic.post('/users', userInfo);
 
             navigate(location?.state || '/');
         } catch (error) {
             console.error(error);
-            setError(error?.message || 'Google sign in failed. Please try again.');
+            setError(error?.response?.data?.message || error?.message || 'Google sign in failed. Please try again.');
         } finally {
             setSubmitting(false);
         }
@@ -46,6 +43,7 @@ const SocialLogin = () => {
                 or continue with
                 <span className="h-px flex-1 bg-slate-200" />
             </div>
+
             <button
                 type="button"
                 disabled={submitting}
@@ -55,6 +53,7 @@ const SocialLogin = () => {
                 <FcGoogle className="text-xl" />
                 {submitting ? 'Connecting...' : 'Login with Google'}
             </button>
+
             {error && <p className="mt-3 text-sm font-semibold text-red-500">{error}</p>}
         </div>
     );
