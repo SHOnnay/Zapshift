@@ -1,0 +1,7 @@
+node_modules
+.env
+*firebase-adminsdk*.json
+.vercel
+package-lock.json
+
+.vercel
