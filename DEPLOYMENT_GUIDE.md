@@ -54,11 +54,11 @@ Copy this URL. You'll need it in the next step.
 **Set environment variables on Vercel dashboard** (`vercel.com` → your project → Settings → Environment Variables):
 
 ```
-DB_USER           = zap_shift_user
-DB_PASSWORD       = LHncgQovy0K4oLyF
-STRIPE_SECRET     = sk_test_51Str...  (your Stripe key)
-SITE_DOMAIN       = https://zap-shift-8e3a6.web.app   (your Firebase Hosting URL)
-FB_SERVICE_KEY    = ewogICJ0eXBlIjo...  (your base64 Firebase service key)
+DB_USER           = 
+DB_PASSWORD       = 
+STRIPE_SECRET     = 
+SITE_DOMAIN       = 
+FB_SERVICE_KEY    = 
 ```
 
 > **Tip:** You already have all these values in your local `.env` file. Just paste them.
