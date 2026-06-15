@@ -1,0 +1,78 @@
+import React from 'react';
+import Logo from '../../../Components/Logo';
+import { Link, NavLink } from 'react-router';
+import useAuth from '../../../hooks/useAuth';
+
+const Navbar = () => {
+
+    const { user, logOutUser } = useAuth();
+
+    const handleLogOut = () => {
+        logOutUser()
+            .then(() => { })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    }
+
+    const navItemStyle = ({ isActive }) =>
+        `px-3 py-1 transition
+    font-bold
+    ${isActive ? "font-bold text-sky-600" : "font-medium"}
+    hover:text-sky-700 focus:text-sky-500 active:text-sky-800
+    focus:bg-transparent active:bg-transparent`;
+
+
+    const links = <>
+        <li><NavLink to="/" className={navItemStyle}>Service</NavLink></li>
+        <li><NavLink to="/sendparcel" className={navItemStyle}>Send Parcel</NavLink></li>
+        <li><NavLink to="/rider" className={navItemStyle}>Be a Rider</NavLink></li>
+        <li><NavLink to="/coverage" className={navItemStyle}>Coverage Areas</NavLink></li>
+        
+
+        {
+            user &&<>
+            <li><NavLink to="/dashboard/my-parcels" className={navItemStyle}>My Parcels</NavLink></li>
+            <li><NavLink to="/dashboard" className={navItemStyle}>Dashboard</NavLink></li>
+            </>
+        }
+
+        <li><NavLink to="/aboutus" className={navItemStyle}>About Us</NavLink></li>
+    </>
+
+    return (
+        <div className="navbar bg-base-100 shadow mb-8 rounded-2xl">
+            <div className="navbar-start">
+                <div className="dropdown">
+                    <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
+                    </div>
+                    <ul
+                        tabIndex="-1"
+                        className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                        {links}
+                    </ul>
+                </div>
+                <div to="/" className="btn btn-ghost text-xl">
+                    <Logo></Logo>
+                </div>
+            </div>
+            <div className="navbar-center hidden lg:flex">
+                <ul className="menu menu-horizontal px-1">
+                    {links}
+                </ul>
+            </div>
+            <div className="navbar-end">
+                {
+                    user ?
+                        <a onClick={handleLogOut} className="btn">Log Out</a> :
+                        <Link to='/login' className="btn">Login</Link>
+                }
+                <Link to='/rider' className="btn btn-primary text-black mx-4">Be a Rider</Link>
+
+            </div>
+        </div>
+    );
+};
+
+export default Navbar;
