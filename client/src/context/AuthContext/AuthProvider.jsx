@@ -4,7 +4,7 @@ import {
     GoogleAuthProvider,
     onAuthStateChanged,
     signInWithEmailAndPassword,
-    signInWithRedirect,
+    signInWithPopup,
     signOut,
     updateProfile,
 } from 'firebase/auth';
@@ -12,6 +12,7 @@ import { AuthContext } from './AuthContext';
 import { auth } from '../../firebase/Firebase.init';
 
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -27,9 +28,11 @@ const AuthProvider = ({ children }) => {
         return signInWithEmailAndPassword(auth, email, password);
     };
 
+    // Popup returns a user result immediately. Redirect does not, which was why
+    // the Google login handler could not save/navigate after sign-in.
     const signInGoogle = () => {
         setLoading(true);
-        return signInWithRedirect(auth, googleProvider);
+        return signInWithPopup(auth, googleProvider);
     };
 
     const logOutUser = () => {
@@ -37,9 +40,7 @@ const AuthProvider = ({ children }) => {
         return signOut(auth);
     };
 
-    const updateUserProfile = (profile) => {
-        return updateProfile(auth.currentUser, profile);
-    };
+    const updateUserProfile = (profile) => updateProfile(auth.currentUser, profile);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -60,11 +61,7 @@ const AuthProvider = ({ children }) => {
         updateUserProfile,
     };
 
-    return (
-        <AuthContext.Provider value={authInfo}>
-            {children}
-        </AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

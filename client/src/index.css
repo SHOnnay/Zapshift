@@ -12,10 +12,33 @@
   --color-secondary: #03373D;
 }
 
+:root {
+  --zap-dark: #03373D;
+  --zap-lime: #CAEB66;
+  --zap-ink: #10272B;
+  --zap-soft: #F3F8EF;
+}
+
 body {
   font-family: "Urbanist", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
+  background: #f6faf4;
+}
+
+.courier-grid {
+  background-image:
+    linear-gradient(rgba(3, 55, 61, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(3, 55, 61, 0.06) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+.route-line {
+  background-image: repeating-linear-gradient(90deg, rgba(202,235,102,.9) 0 14px, transparent 14px 27px);
+}
+
+.truck-card-shadow {
+  box-shadow: 0 24px 80px rgba(3, 55, 61, 0.16);
 }
 
 .review-slide {
@@ -40,8 +63,8 @@ body {
   position: absolute;
   inset: -20px;
   border-radius: 30px;
-  background: linear-gradient(135deg, #f9f9f9, #7db5e6);
+  background: linear-gradient(135deg, #f9f9f9, #caeb66);
   filter: blur(40px);
-  opacity: 0.4;
+  opacity: 0.35;
   z-index: -1;
 }

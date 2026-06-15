@@ -3,31 +3,17 @@ import useRole from '../../../hooks/useRole';
 import AdminDashboardHome from './AdminDashboardHome';
 import RiderDashboardHome from './RiderDashboardHome';
 import UserDashboardHome from './UserDashboardHome';
+import PageLoader from '../../../Components/State/PageLoader';
 
 const DashboardHome = () => {
+  const { role, roleLoading } = useRole();
 
-    const {role, roleLoading} = useRole();
-    if(roleLoading){
-        return <div className='flex items-center justify-center h-screen'>
-            <span className="loading loading-spinner loading-lg"></span>
-        </div>
-    }
-    if(role === 'admin'){
-        return <AdminDashboardHome />
-    }
-    else if(role === 'rider'){
-        return <RiderDashboardHome />
-    }
-    else if(role === 'user'){
-        return <UserDashboardHome />
-    }
+  if (roleLoading) return <PageLoader message="Preparing your courier dashboard..." />;
 
+  if (role === 'admin') return <AdminDashboardHome />;
+  if (role === 'rider') return <RiderDashboardHome />;
 
-    return (
-        <div>
-            <h2>dashing dashboard</h2>
-        </div>
-    );
+  return <UserDashboardHome />;
 };
 
 export default DashboardHome;

@@ -1,45 +1,31 @@
 import React, { use } from 'react';
-import { Autoplay, EffectCards, EffectCoverflow, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import ReviewCard from './ReviewCard';
 
 const Reviews = ({ reviewsPromise }) => {
-    const reviews = use(reviewsPromise);
-    
-    return (
-        <div className='my-24'>
-            <div className='text-center mb-24'>
-                <h3 className='text-3xl text-center text-secondary font-bold my-8'>What our customers are saying</h3>
-                <p>Trusted delivery experiences from merchants, customers, and riders using ZapShift every day.</p>
-            </div>
-            <Swiper
-                loop={true}
-                centeredSlides={true}
-                slidesPerView={1.2}
-                spaceBetween={40}
-                speed={800}
-                autoplay={{
-                    delay: 2000,
-                    disableOnInteraction: false,
-                }}
-                pagination={{ clickable: true }}
-                breakpoints={{
-                    768: { slidesPerView: 2.2 },
-                    1024: { slidesPerView: 3 },
-                }}
-                modules={[Pagination, Autoplay]}
-                className="py-20"
-            >
-                {reviews.map((review, index) => (
-                    <SwiperSlide key={index}>
-                        <div className="review-slide">
-                            <ReviewCard review={review} />
-                        </div>
-                    </SwiperSlide>
-                ))}
-            </Swiper>
+  const reviews = use(reviewsPromise);
+  const featuredReviews = reviews.slice(0, 3);
+
+  return (
+    <section className="rounded-[2.5rem] border border-secondary/10 bg-white p-6 shadow-xl shadow-secondary/5 md:p-10">
+      <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+        <div>
+          <p className="text-sm font-black uppercase tracking-[0.25em] text-secondary/45">Customer trust</p>
+          <h2 className="mt-4 text-4xl font-black tracking-tight text-secondary md:text-5xl">
+            Delivery should feel clear, not confusing.
+          </h2>
+          <p className="mt-5 leading-8 text-secondary/65">
+            I removed the carousel because it was making the homepage feel like a template. These testimonials now work like proof cards: easy to scan, stable, and clean.
+          </p>
         </div>
-    );
+
+        <div className="grid gap-4">
+          {featuredReviews.map((review, index) => (
+            <ReviewCard key={index} review={review} index={index} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default Reviews;

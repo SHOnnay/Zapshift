@@ -1,19 +1,13 @@
 import React from 'react';
-import service from '../../../../assets/service.png'
 
-const ServiceCard = ({ title, description }) => (
-    <div
-        className='bg-white h-[340px] rounded-3xl w-full sm:w-[calc(33.333%-16px)] lg:w-[calc(30%-16px)] shadow-lg flex flex-col items-center p-6 gap-3 text-center hover:bg-primary transition duration-150' >
-        <img src={service} alt="Service Icon" className="w-16 h-16 mb-2" />
-
-        <p className='text-xl font-bold text-secondary'>
-            {title}
-        </p>
-
-        <p className='text-[#606060] text-sm'>
-            {description}
-        </p>
+const ServiceCard = ({ icon: Icon, title, description }) => (
+  <div className="group rounded-[1.75rem] border border-white/10 bg-white/[0.08] p-6 text-left backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-primary/70 hover:bg-white/[0.13]">
+    <div className="mb-5 flex size-14 items-center justify-center rounded-2xl bg-primary text-xl text-secondary shadow-lg shadow-primary/20 transition group-hover:rotate-3 group-hover:scale-105">
+      <Icon />
     </div>
+    <p className="text-xl font-black text-white">{title}</p>
+    <p className="mt-3 text-sm leading-7 text-white/65">{description}</p>
+  </div>
 );
 
 export default ServiceCard;

@@ -1,113 +1,87 @@
 import React from 'react';
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
 import useAuth from '../../../hooks/useAuth';
 import { Link, useLocation, useNavigate } from 'react-router';
 import SocialLogin from '../SocalLogin/SocialLogin';
 import axios from 'axios';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import { FaArrowRight } from 'react-icons/fa6';
 
 const Register = () => {
-
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { registerUser, updateUserProfile } = useAuth();
-
     const location = useLocation();
     const navigation = useNavigate();
     const axiosSecure = useAxiosSecure();
 
-    const handleRegistration = (data) => {
+    const handleRegistration = async (data) => {
+        try {
+            const result = await registerUser(data.email, data.password);
+            const token = await result.user.getIdToken();
+            const profileImg = data.photo?.[0];
+            let photoURL = '';
 
-        const profileImg = data.photo[0];
-
-        registerUser(data.email, data.password)
-            .then(() => {
-                //1. store the image and photo url
+            if (profileImg) {
                 const formData = new FormData();
                 formData.append('image', profileImg);
-
-                //2. send the photo to imgbb server to get the photo url
                 const image_API_URL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host_key}`;
+                const res = await axios.post(image_API_URL, formData);
+                photoURL = res.data.data.display_url;
+            }
 
-                axios.post(image_API_URL, formData)
-                    .then(res => {
-                        const photoURL = res.data.data.display_url;
+            const userInfo = {
+                displayName: data.name,
+                email: data.email,
+                photoURL,
+            };
 
-                        //create user in the database with name, email and photoURL
+            await axiosSecure.post('/users', userInfo, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
-                        const userInfo = {
-                            displayName: data.name,
-                            email: data.email,
-                            photoURL: photoURL
-                        }
-
-                        axiosSecure.post('/users', userInfo).then(() => {
-                            //update user profile with name and photoURL firebase
-                            const userProfile = {
-                                displayName: data.name,
-                                photoURL: photoURL
-                            }
-
-                            updateUserProfile(userProfile)
-                                .then(() => {
-                                    navigation(location.state || '/');
-                                })
-                                .catch(error => {
-                                    console.log(error.message);
-                                })
-                        })
-                    })
-                    .catch(error => {
-                        console.log(error.message);
-                    })
-            })
-
-
+            await updateUserProfile({ displayName: data.name, photoURL });
+            navigation(location.state || '/');
+        } catch (error) {
+            console.log(error.message);
+        }
     };
+
     return (
-        <div className="card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl">
-            <h3 className="text-3xl text-center font-semibold text-secondary">Welcome to Zap Shift</h3>
-            <p className='text-center mt-5 font-semibold text-secondary'>Please Register</p>
-            <form onSubmit={handleSubmit(handleRegistration)}>
-                <div className="card bg-base-100 w-full max-w-sm shrink-0">
-                    <div className="card-body">
-                        <fieldset className="fieldset">
-                            {/* name  */}
-                            <label className="label">Name</label>
-                            <input type="text" {...register('name', { required: true })} className="input" placeholder="Your name" />
-                            {errors.email?.type === 'required' && <p className="text-red-600">This field is required</p>}
-                            {/* image field  */}
-                            <label className="label">Photo</label>
-                            <input type="file" {...register('photo', { required: true })} className="file-input" placeholder="Your photo" />
-                            {errors.email?.type === 'required' && <p className="text-red-600">This field is required</p>}
+        <div className="mx-auto w-full max-w-md overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-2xl shadow-secondary/10 backdrop-blur">
+            <div className="bg-secondary p-8 text-white">
+                <p className="text-xs font-black uppercase tracking-[0.28em] text-primary">Join ZapShift</p>
+                <h3 className="mt-3 text-4xl font-black tracking-tight">Create account.</h3>
+                <p className="mt-3 text-sm leading-6 text-white/65">Start booking parcels, saving delivery history and managing your courier workflow.</p>
+            </div>
+            <form onSubmit={handleSubmit(handleRegistration)} className="p-8">
+                <fieldset className="fieldset gap-3">
+                    <label className="label font-bold text-secondary">Name</label>
+                    <input type="text" {...register('name', { required: true })} className="input input-bordered w-full rounded-2xl" placeholder="Your name" />
+                    {errors.name?.type === 'required' && <p className="text-sm font-semibold text-red-600">Name is required</p>}
 
-                            {/* email */}
-                            <label className="label">Email</label>
-                            <input type="email" {...register('email', { required: true })} className="input" placeholder="Email" />
-                            {errors.email?.type === 'required' && <p className="text-red-600">This field is required</p>}
+                    <label className="label mt-2 font-bold text-secondary">Photo</label>
+                    <input type="file" {...register('photo')} className="file-input file-input-bordered w-full rounded-2xl" />
 
-                            {/* password */}
-                            <label className="label">Password</label>
-                            <input type="password" {...register('password', {
-                                required: true, minLength: 8,
-                                pattern: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/
-                            })} className="input" placeholder="Password" />
+                    <label className="label mt-2 font-bold text-secondary">Email</label>
+                    <input type="email" {...register('email', { required: true })} className="input input-bordered w-full rounded-2xl" placeholder="Email" />
+                    {errors.email?.type === 'required' && <p className="text-sm font-semibold text-red-600">Email is required</p>}
 
-                            {errors.password?.type === 'required' && <p className="text-red-600">This field is required</p>}
-                            {errors.password?.type === 'minLength' && <p className="text-red-600">Password must be 8 characters or longer</p>}
-                            {
-                                errors.password?.type === 'pattern' && <p className="text-red-600 font-semibold">Password must contain at least one uppercase letter, one lowercase letter and one number.</p>
-                            }
+                    <label className="label mt-2 font-bold text-secondary">Password</label>
+                    <input type="password" {...register('password', {
+                        required: true, minLength: 8,
+                        pattern: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/
+                    })} className="input input-bordered w-full rounded-2xl" placeholder="Password" />
+                    {errors.password?.type === 'required' && <p className="text-sm font-semibold text-red-600">Password is required</p>}
+                    {errors.password?.type === 'minLength' && <p className="text-sm font-semibold text-red-600">Password must be 8 characters or longer</p>}
+                    {errors.password?.type === 'pattern' && <p className="text-sm font-semibold text-red-600">Password must contain letters and a number.</p>}
 
-                            <div><a className="link link-hover">Forgot password?</a></div>
-                            <button className="btn btn-neutral mt-4">Register</button>
-                        </fieldset>
-                        <p>Already have an account? <Link
-                            state={location.state}
-                            className='text-blue-500 underline' to='/login'>Login</Link></p>
-                    </div>
-                </div>
+                    <button className="btn btn-primary mt-5 rounded-2xl font-black text-secondary">
+                        Register <FaArrowRight />
+                    </button>
+                </fieldset>
+                <p className="mt-5 text-center text-sm text-slate-500">Already have an account? <Link state={location.state} className="font-black text-secondary underline" to="/login">Login</Link></p>
             </form>
-            <SocialLogin></SocialLogin>
+            <SocialLogin />
         </div>
     );
 };

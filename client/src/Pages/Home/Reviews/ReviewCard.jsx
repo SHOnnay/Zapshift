@@ -1,29 +1,30 @@
 import React from 'react';
-import { FaQuoteLeft } from "react-icons/fa";
+import { FaQuoteLeft } from 'react-icons/fa';
 
-const ReviewCard = ({ review }) => {
-    const { userName, review: testimonial, user_photoURL } = review;
-    return (
-        <div className="w-full max-w-md p-6 rounded-2xl shadow-lg bg-base-100 border border-gray-200">
-            <FaQuoteLeft className="text-3xl text-primary mb-4" />
+const roles = ['Merchant sender', 'Parcel customer', 'Delivery partner'];
 
-            <p className="text-gray-600 leading-relaxed mb-4">
-                {testimonial}
-            </p>
+const ReviewCard = ({ review, index = 0 }) => {
+  const { userName, review: testimonial, user_photoURL } = review;
 
-            <div className="border-t border-gray-200 my-4"></div>
-
-            <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary">
-                    <img src={user_photoURL} alt="" />
-                </div>
-                <div>
-                    <h3 className="font-semibold text-lg">{userName}</h3>
-                    <p className="text-sm text-gray-500">Senior Product Designer</p>
-                </div>
-            </div>
+  return (
+    <article className="group rounded-[1.75rem] border border-secondary/10 bg-[#f7fbef] p-5 transition duration-300 hover:-translate-y-1 hover:border-primary hover:bg-primary/20">
+      <div className="flex gap-4">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-secondary text-primary">
+          <FaQuoteLeft />
         </div>
-    );
+        <div className="min-w-0 flex-1">
+          <p className="leading-7 text-secondary/70">{testimonial}</p>
+          <div className="mt-5 flex items-center gap-3 border-t border-secondary/10 pt-4">
+            <img src={user_photoURL} alt={userName} className="size-11 rounded-2xl object-cover ring-2 ring-white" />
+            <div>
+              <h3 className="font-black text-secondary">{userName}</h3>
+              <p className="text-sm font-semibold text-secondary/45">{roles[index % roles.length]}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
 };
 
 export default ReviewCard;

@@ -10,7 +10,7 @@ const RootLayout = () => {
     const location = useLocation();
 
     return (
-        <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(202,235,102,0.22),transparent_28%),linear-gradient(180deg,#f7faf8_0%,#eef4ef_45%,#ffffff_100%)] px-3 text-base-content sm:px-5">
+        <div className="min-h-screen courier-grid bg-[radial-gradient(circle_at_top_left,rgba(202,235,102,0.35),transparent_26%),radial-gradient(circle_at_85%_10%,rgba(3,55,61,0.14),transparent_28%),linear-gradient(180deg,#f8fbf4_0%,#edf6ea_48%,#ffffff_100%)] px-3 text-base-content sm:px-5">
             <div className="mx-auto max-w-7xl pt-4">
                 <Navbar />
                 <AnimatePresence mode="wait">

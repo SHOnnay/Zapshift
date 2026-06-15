@@ -1,119 +1,143 @@
 import React from 'react';
 import { Link, NavLink, Outlet } from 'react-router';
 import Logo from '../Components/Logo';
-import { FaMotorcycle, FaRegCreditCard, FaTasks, FaUsers } from 'react-icons/fa';
 import useRole from '../hooks/useRole';
-import { RiEBikeFill } from 'react-icons/ri';
+import useAuth from '../hooks/useAuth';
+import { FaBoxOpen, FaCreditCard, FaHouse, FaMotorcycle, FaRoute, FaUsersGear } from 'react-icons/fa6';
+import { FaTasks } from 'react-icons/fa';
 import { SiGoogletasks } from 'react-icons/si';
 
+const baseLink = 'group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-extrabold text-secondary/70 transition hover:bg-primary/20 hover:text-secondary';
+const activeLink = 'bg-secondary text-white shadow-lg shadow-secondary/10 hover:bg-secondary hover:text-white';
 
 const DashboardLayout = () => {
-    const { role } = useRole();
+  const { role } = useRole();
+  const { user } = useAuth();
 
-    return (
-        <div className="drawer lg:drawer-open min-h-screen bg-base-200">
-            <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content">
-                {/* Navbar */}
-                <nav className="navbar sticky top-0 z-30 w-full border-b border-base-300 bg-base-100/90 backdrop-blur">
-                    <label htmlFor="my-drawer-4" aria-label="open sidebar" className="btn btn-square btn-ghost">
-                        {/* Sidebar toggle icon */}
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor" className="my-1.5 inline-block size-4"><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path><path d="M9 4v16"></path><path d="M14 10l2 2l-2 2"></path></svg>
-                    </label>
-                    <div className="px-4 text-secondary font-black">ZapShift Dashboard</div>
-                </nav>
-                {/* Page content here */}
-                <Outlet></Outlet>
+  const navClass = ({ isActive }) => `${baseLink} ${isActive ? activeLink : ''}`;
+
+  return (
+    <div className="drawer lg:drawer-open min-h-screen bg-[#f6faf4] courier-grid">
+      <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
+
+      <div className="drawer-content flex min-h-screen flex-col">
+        <nav className="sticky top-0 z-30 border-b border-secondary/10 bg-white/85 backdrop-blur-2xl">
+          <div className="flex min-h-20 items-center justify-between px-4 md:px-8">
+            <div className="flex items-center gap-3">
+              <label htmlFor="dashboard-drawer" aria-label="open sidebar" className="btn btn-square btn-ghost rounded-2xl text-secondary lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor" className="size-5"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+              </label>
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.28em] text-primary">ZapShift Console</p>
+                <h1 className="text-xl font-black text-secondary md:text-2xl">Courier Operations Dashboard</h1>
+              </div>
             </div>
 
-            <div className="drawer-side is-drawer-close:overflow-visible">
-                <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
-                <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
-
-                    {/* Sidebar content here */}
-                    <ul className="menu w-full grow">
-                        {/* List item */}
-                        <li>
-                            <div className="p-3"><Logo /></div>
-                        </li>
-                        <li>
-                            <Link to="/dashboard" className="is-drawer-close:tooltip is-drawer-close:tooltip-right -ml-0.5 mt-0.5" data-tip="Homepage">
-                                {/* Home icon */}
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor" className="my-1.5 inline-block size-4"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                                <span className="is-drawer-close:hidden">Homepage</span>
-                            </Link>
-                        </li>
-
-                        {/* our dashboard link */}
-                        <li>
-                            <NavLink to="/dashboard/my-parcels" className="is-drawer-close:tooltip is-drawer-close:tooltip-right -ml-0.5 -mt-1" data-tip="My Parcels">
-                                {/* Dashboard icon */}
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor" className="my-1.5 inline-block size-4.5"><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path><path d="M9 4v16"></path><path d="M14 10l2 2l-2 2"></path></svg>
-                                <span className="is-drawer-close:hidden">My Parcels</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/dashboard/payment-history" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Payment History">
-                                <FaRegCreditCard />
-                                <span className="is-drawer-close:hidden">Payment History</span>
-                            </NavLink>
-                        </li>
-
-                        {
-                            role === 'rider' && <>
-                                <li>
-                                    <NavLink to="/dashboard/assigned-deliveries" className="is-drawer-close:tooltip is-drawer-close:tooltip-right mt-2" data-tip="Assigned Deliveries">
-                                        <FaTasks className='size-4' />
-                                        <span className="is-drawer-close:hidden">Assigned Deliveries</span>
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink to="/dashboard/completed-deliveries" className="is-drawer-close:tooltip is-drawer-close:tooltip-right mt-1" data-tip="Completed Deliveries">
-                                        <SiGoogletasks className='size-4' />
-                                        <span className="is-drawer-close:hidden">Completed Deliveries</span>
-                                    </NavLink>
-                                </li>
-                            </>
-                        }
-
-                        {/* admin  only links */}
-
-                        {
-                            role === 'admin' && <>
-                                <li>
-                                    <NavLink to="/dashboard/approve-riders" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Approve Riders">
-                                        <FaMotorcycle className='size-4' />
-                                        <span className="is-drawer-close:hidden">Approve Riders</span>
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink to="/dashboard/assign-riders" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Assign Riders">
-                                        <RiEBikeFill className='size-4' />
-                                        <span className="is-drawer-close:hidden">Assign Riders</span>
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink to="/dashboard/users-management" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Users Management">
-                                        <FaUsers className='size-4' />
-                                        <span className="is-drawer-close:hidden">Users Management</span>
-                                    </NavLink>
-                                </li>
-                            </>
-                        }
-
-                        {/* List item */}
-                        <li>
-                            <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Settings">
-                                {/* Settings icon */}
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor" className="my-1.5 inline-block size-4"><path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle></svg>
-                                <span className="is-drawer-close:hidden">Settings</span>
-                            </button>
-                        </li>
-                    </ul>
+            <div className="hidden items-center gap-3 rounded-full border border-secondary/10 bg-secondary/5 px-4 py-2 md:flex">
+              <div className="avatar placeholder">
+                <div className="w-9 rounded-full bg-secondary text-white">
+                  <span className="text-xs font-black">{user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}</span>
                 </div>
+              </div>
+              <div className="leading-tight">
+                <p className="text-sm font-black text-secondary">{user?.displayName || 'ZapShift User'}</p>
+                <p className="text-xs font-bold capitalize text-secondary/50">{role || 'user'} account</p>
+              </div>
             </div>
-        </div>
-    );
+          </div>
+        </nav>
+
+        <main className="flex-1">
+          <Outlet />
+        </main>
+      </div>
+
+      <div className="drawer-side z-40">
+        <label htmlFor="dashboard-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+        <aside className="flex min-h-full w-80 flex-col border-r border-secondary/10 bg-white/95 p-4 backdrop-blur-2xl">
+          <div className="mb-6 rounded-[2rem] bg-[#f6faf4] p-4">
+            <Logo />
+          </div>
+
+          <div className="mb-5 rounded-[1.75rem] bg-secondary p-5 text-white shadow-xl shadow-secondary/15">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-primary">Live Network</p>
+            <h2 className="mt-2 text-2xl font-black">Move parcels with confidence.</h2>
+            <p className="mt-2 text-sm font-semibold text-white/60">Bookings, payments, riders, and delivery status in one courier workspace.</p>
+          </div>
+
+          <ul className="menu grow gap-1 p-0">
+            <li>
+              <NavLink to="/dashboard" end className={navClass}>
+                <FaHouse className="text-lg" />
+                <span>Overview</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/dashboard/my-parcels" className={navClass}>
+                <FaBoxOpen className="text-lg" />
+                <span>My Parcels</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/dashboard/payment-history" className={navClass}>
+                <FaCreditCard className="text-lg" />
+                <span>Payment History</span>
+              </NavLink>
+            </li>
+
+            {role === 'rider' && (
+              <>
+                <li className="mt-3 px-4 text-[10px] font-black uppercase tracking-[0.24em] text-secondary/35">Rider Tools</li>
+                <li>
+                  <NavLink to="/dashboard/assigned-deliveries" className={navClass}>
+                    <FaTasks className="text-lg" />
+                    <span>Assigned Deliveries</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/completed-deliveries" className={navClass}>
+                    <SiGoogletasks className="text-lg" />
+                    <span>Completed Deliveries</span>
+                  </NavLink>
+                </li>
+              </>
+            )}
+
+            {role === 'admin' && (
+              <>
+                <li className="mt-3 px-4 text-[10px] font-black uppercase tracking-[0.24em] text-secondary/35">Admin Tools</li>
+                <li>
+                  <NavLink to="/dashboard/approve-riders" className={navClass}>
+                    <FaMotorcycle className="text-lg" />
+                    <span>Approve Riders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/assign-riders" className={navClass}>
+                    <FaRoute className="text-lg" />
+                    <span>Assign Riders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/users-management" className={navClass}>
+                    <FaUsersGear className="text-lg" />
+                    <span>Users Management</span>
+                  </NavLink>
+                </li>
+              </>
+            )}
+          </ul>
+
+          <div className="mt-5 rounded-[1.5rem] border border-secondary/10 bg-primary/20 p-4">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-secondary/50">Quick action</p>
+            <Link to="/sendparcel" className="btn btn-primary mt-3 w-full rounded-full font-black text-secondary shadow-lg shadow-primary/30">
+              Book New Delivery
+            </Link>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
 };
 
 export default DashboardLayout;

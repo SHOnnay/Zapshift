@@ -81,13 +81,13 @@ https://zap-shift-server.vercel.app/
 Create your `.env` file in `zap-shift-client/`:
 
 ```env
-VITE_apiKey=AIzaSyALK3TlX7jxxJjaqeAK6IilJII4Kownywk
-VITE_authDomain=zap-shift-8e3a6.firebaseapp.com
-VITE_projectId=zap-shift-8e3a6
-VITE_storageBucket=zap-shift-8e3a6.firebasestorage.app
-VITE_messagingSenderId=150492536132
-VITE_appId=1:150492536132:web:fd9e27db9b94cc30e10b11
-VITE_image_host_key=47257e4faac79df6dab9faa96a31f337
+VITE_apiKey=
+VITE_authDomain=
+VITE_projectId=
+VITE_storageBucket=
+VITE_messagingSenderId=
+VITE_appId=
+VITE_image_host_key=
 
 # ← This is the Vercel server URL from Step 1
 VITE_API_URL=https://zap-shift-server.vercel.app

@@ -2,82 +2,104 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { FaBoxOpen, FaMotorcycle, FaUsersGear } from 'react-icons/fa6';
+import { FaBoxOpen, FaMotorcycle, FaRoute, FaUsersGear } from 'react-icons/fa6';
 import { Link } from 'react-router';
 import PageLoader from '../../../Components/State/PageLoader';
+import { DashboardHero, Panel, StatCard } from './DashboardCards';
 
 const CHART_COLORS = ['#03373D', '#CAEB66', '#38BDF8', '#FB7185', '#A78BFA', '#F59E0B'];
 
-const formatStatus = (status = '') => status.split('-').join(' ').split('_').join(' ');
+const formatStatus = (status) => String(status || 'unknown').split('-').join(' ').split('_').join(' ');
 
 const AdminDashboardHome = () => {
-    const axiosSecure = useAxiosSecure();
+  const axiosSecure = useAxiosSecure();
 
-    const { data: deliveryStats = [], isLoading } = useQuery({
-        queryKey: ['delivery-status-stats'],
-        queryFn: async () => {
-            const res = await axiosSecure.get('/parcels/delivery-status/stats');
-            return res.data;
-        }
-    });
+  const { data: deliveryStats = [], isLoading } = useQuery({
+    queryKey: ['delivery-status-stats'],
+    queryFn: async () => {
+      const res = await axiosSecure.get('/parcels/delivery-status/stats');
+      return Array.isArray(res.data) ? res.data : [];
+    }
+  });
 
-    const chartData = deliveryStats.map(item => ({
-        name: formatStatus(item.status),
-        value: item.count
-    }));
+  const chartData = deliveryStats.map(item => ({
+    name: formatStatus(item.status),
+    value: Number(item.count) || 0
+  }));
 
-    const totalParcels = deliveryStats.reduce((sum, item) => sum + item.count, 0);
+  const totalParcels = deliveryStats.reduce((sum, item) => sum + (Number(item.count) || 0), 0);
 
-    if (isLoading) return <PageLoader message="Loading admin dashboard..." />;
+  if (isLoading) return <PageLoader message="Loading admin dashboard..." />;
 
-    return (
-        <div className="p-4 md:p-8">
-            <section className="rounded-[2rem] bg-secondary p-8 text-white shadow-xl">
-                <p className="font-bold uppercase tracking-[0.25em] text-primary">Admin Dashboard</p>
-                <h1 className="mt-3 text-4xl font-black">Control center for ZapShift operations</h1>
-                <p className="mt-3 max-w-2xl text-white/70">Review delivery health, approve riders, assign parcels, and manage platform users.</p>
-                <div className="mt-7 flex flex-wrap gap-3">
-                    <Link to="/dashboard/approve-riders" className="btn btn-primary rounded-full text-secondary">Approve Riders</Link>
-                    <Link to="/dashboard/assign-riders" className="btn rounded-full border-white/20 bg-white/10 text-white hover:bg-white/20">Assign Deliveries</Link>
+  return (
+    <div className="space-y-6 p-4 md:p-8">
+      <DashboardHero
+        eyebrow="Admin dashboard"
+        title="Control the courier network."
+        description="Monitor delivery health, approve riders, assign parcels, and keep the ZapShift operation moving smoothly."
+        actions={[
+          <Link key="approve" to="/dashboard/approve-riders" className="btn btn-primary rounded-full px-7 font-black text-secondary shadow-lg shadow-primary/30">Approve Riders</Link>,
+          <Link key="assign" to="/dashboard/assign-riders" className="btn rounded-full border-white/20 bg-white/10 px-7 font-black text-white hover:bg-white/20">Assign Deliveries</Link>
+        ]}
+      />
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <StatCard icon={<FaBoxOpen />} label="Total Parcels" value={totalParcels} note="All parcels grouped by delivery status." />
+        <StatCard icon={<FaMotorcycle />} label="Rider Flow" value="Approval + assignment" note="Manage rider onboarding and parcel allocation." />
+        <StatCard icon={<FaUsersGear />} label="Access Control" value="Role based" note="Separate customer, rider, and admin workflows." />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
+        <Panel title="Delivery status" subtitle="Live parcel distribution by status.">
+          <div className="space-y-3">
+            {deliveryStats.length ? deliveryStats.map((stat, index) => (
+              <div key={`${stat.status || 'unknown'}-${index}`} className="flex items-center justify-between rounded-2xl bg-[#f6faf4] p-4 transition hover:bg-primary/20">
+                <div className="flex items-center gap-3">
+                  <span className="size-3 rounded-full" style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }} />
+                  <span className="font-black capitalize text-secondary">{formatStatus(stat.status)}</span>
                 </div>
-            </section>
+                <span className="rounded-full bg-secondary px-4 py-1 text-sm font-black text-white">{Number(stat.count) || 0}</span>
+              </div>
+            )) : <p className="rounded-2xl bg-[#f6faf4] p-5 text-sm font-semibold text-secondary/60">No delivery data yet.</p>}
+          </div>
+        </Panel>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-                <div className="rounded-3xl bg-base-100 p-6 shadow-sm"><FaBoxOpen className="mb-4 text-3xl text-primary" /><p className="text-sm font-bold uppercase text-base-content/50">Total Parcels</p><h3 className="text-4xl font-black text-secondary">{totalParcels}</h3></div>
-                <div className="rounded-3xl bg-base-100 p-6 shadow-sm"><FaMotorcycle className="mb-4 text-3xl text-primary" /><p className="text-sm font-bold uppercase text-base-content/50">Rider Flow</p><h3 className="text-2xl font-black text-secondary">Approval + Assignment</h3></div>
-                <div className="rounded-3xl bg-base-100 p-6 shadow-sm"><FaUsersGear className="mb-4 text-3xl text-primary" /><p className="text-sm font-bold uppercase text-base-content/50">Access Control</p><h3 className="text-2xl font-black text-secondary">Role-based Dashboard</h3></div>
-            </div>
+        <Panel title="Courier chart" subtitle="A quick visual snapshot of parcel flow.">
+          <div className="h-80 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie dataKey="value" data={chartData} cx="50%" cy="50%" outerRadius={105} label>
+                  {chartData.map((_, index) => <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />)}
+                </Pie>
+                <Legend />
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </Panel>
+      </div>
 
-            <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
-                <div className="rounded-3xl bg-base-100 p-6 shadow-sm">
-                    <h2 className="text-2xl font-black text-secondary">Delivery Status</h2>
-                    <div className="mt-4 space-y-3">
-                        {deliveryStats.length ? deliveryStats.map((stat) => (
-                            <div key={stat.status} className="flex items-center justify-between rounded-2xl bg-base-200 p-4">
-                                <span className="font-bold capitalize text-secondary">{formatStatus(stat.status)}</span>
-                                <span className="badge badge-primary badge-lg text-secondary">{stat.count}</span>
-                            </div>
-                        )) : <p className="text-base-content/60">No delivery data yet.</p>}
-                    </div>
-                </div>
-
-                <div className="rounded-3xl bg-base-100 p-6 shadow-sm">
-                    <h2 className="text-2xl font-black text-secondary">Status Chart</h2>
-                    <div className="h-80 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie dataKey="value" data={chartData} cx="50%" cy="50%" outerRadius={105} label>
-                                    {chartData.map((_, index) => <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />)}
-                                </Pie>
-                                <Legend />
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
+      <Panel title="Admin actions" subtitle="Common operations for managing courier movement.">
+        <div className="grid gap-4 md:grid-cols-3">
+          <Link to="/dashboard/approve-riders" className="rounded-3xl bg-secondary p-5 text-white transition hover:-translate-y-1 hover:shadow-xl hover:shadow-secondary/15">
+            <FaMotorcycle className="text-3xl text-primary" />
+            <h3 className="mt-4 text-xl font-black">Approve riders</h3>
+            <p className="mt-2 text-sm font-semibold text-white/60">Review rider requests and activate delivery capacity.</p>
+          </Link>
+          <Link to="/dashboard/assign-riders" className="rounded-3xl bg-primary/30 p-5 text-secondary transition hover:-translate-y-1 hover:bg-primary">
+            <FaRoute className="text-3xl" />
+            <h3 className="mt-4 text-xl font-black">Assign deliveries</h3>
+            <p className="mt-2 text-sm font-semibold text-secondary/60">Match pending parcels with available riders.</p>
+          </Link>
+          <Link to="/dashboard/users-management" className="rounded-3xl bg-secondary/5 p-5 text-secondary transition hover:-translate-y-1 hover:bg-secondary/10">
+            <FaUsersGear className="text-3xl" />
+            <h3 className="mt-4 text-xl font-black">Manage users</h3>
+            <p className="mt-2 text-sm font-semibold text-secondary/60">Update roles and maintain access control.</p>
+          </Link>
         </div>
-    );
+      </Panel>
+    </div>
+  );
 };
 
 export default AdminDashboardHome;

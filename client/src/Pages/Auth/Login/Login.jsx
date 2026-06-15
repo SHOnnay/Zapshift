@@ -3,52 +3,45 @@ import { useForm } from 'react-hook-form';
 import useAuth from '../../../hooks/useAuth';
 import { Link, useLocation, useNavigate } from 'react-router';
 import SocialLogin from '../SocalLogin/SocialLogin';
+import { FaArrowRight } from 'react-icons/fa6';
 
 const Login = () => {
-
-    const { register, handleSubmit, formState: { errors } } = useForm()
-    const { signInUser }=useAuth();
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { signInUser } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
-
     const handleLogin = data => {
         signInUser(data.email, data.password)
-        .then(() => {
-            navigate(location?.state || '/');
-        })
-        .catch(error=>{
-            console.log(error.message);
-        })
-    }
+            .then(() => navigate(location?.state || '/'))
+            .catch(error => console.log(error.message));
+    };
 
     return (
-        <div className="card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl">
-            <h3 className="text-3xl text-center font-semibold text-secondary ">Welcome Back</h3>
-            <p className='text-center  mt-5 font-semibold text-secondary'>Please login</p>
-            <form className="card-body" onSubmit={handleSubmit(handleLogin)}>
-                <fieldset className="fieldset">
-                    {/* email */}
-                    <label className="label">Email</label>
-                    <input type="email" {...register('email', { required: true })} className="input" placeholder="Email" />
-                    {errors.email?.type === 'required' && <p className="text-red-600">This field is required</p>}
+        <div className="mx-auto w-full max-w-md overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-2xl shadow-secondary/10 backdrop-blur">
+            <div className="bg-secondary p-8 text-white">
+                <p className="text-xs font-black uppercase tracking-[0.28em] text-primary">Courier access</p>
+                <h3 className="mt-3 text-4xl font-black tracking-tight">Welcome back.</h3>
+                <p className="mt-3 text-sm leading-6 text-white/65">Login to book parcels, track shipments and manage your ZapShift dashboard.</p>
+            </div>
+            <form className="p-8" onSubmit={handleSubmit(handleLogin)}>
+                <fieldset className="fieldset gap-3">
+                    <label className="label font-bold text-secondary">Email</label>
+                    <input type="email" {...register('email', { required: true })} className="input input-bordered w-full rounded-2xl" placeholder="Email" />
+                    {errors.email?.type === 'required' && <p className="text-sm font-semibold text-red-600">Email is required</p>}
 
-                    {/* password */}
-                    <label className="label">Password</label>
-                    <input type="password" {...register('password', { required: true, minLength: 6 })} className="input" placeholder="Password" />
+                    <label className="label mt-2 font-bold text-secondary">Password</label>
+                    <input type="password" {...register('password', { required: true, minLength: 6 })} className="input input-bordered w-full rounded-2xl" placeholder="Password" />
+                    {errors.password?.type === 'required' && <p className="text-sm font-semibold text-red-600">Password is required</p>}
+                    {errors.password?.type === 'minLength' && <p className="text-sm font-semibold text-red-600">Password must be 6 characters or longer</p>}
 
-                    {errors.password?.type === 'required' && <p className="text-red-600">This field is required</p>}
-
-                    {errors.password?.type === 'minLength' && <p className="text-red-600">Password must be 6 characters or longer</p>}
-
-                    <div><a className="link link-hover">Forgot password?</a></div>
-                    <button className="btn btn-neutral mt-4">Login</button>
+                    <button className="btn btn-primary mt-5 rounded-2xl font-black text-secondary">
+                        Login <FaArrowRight />
+                    </button>
                 </fieldset>
-                <p>New to Zap Shift? <Link 
-                state={location.state}
-                className='text-blue-500 underline' to='/register'>Register</Link></p>
+                <p className="mt-5 text-center text-sm text-slate-500">New to ZapShift? <Link state={location.state} className="font-black text-secondary underline" to="/register">Create account</Link></p>
             </form>
-            <SocialLogin></SocialLogin>
+            <SocialLogin />
         </div>
     );
 };
