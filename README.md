@@ -94,3 +94,38 @@ Users can create delivery requests, track parcels in real time, manage shipments
 ```bash
 git clone [https://github.com/SHOnnay/Zapshift.git](https://github.com/SHOnnay/Zapshift.git)
 cd Zapshift
+
+
+### 2. Client Setup
+Navigate to the client folder and install dependencies:
+```bash
+cd zap-shift-client
+npm install
+npm run dev
+
+### 3. Server Setup
+In a new terminal window, navigate to the server folder and install dependencies:
+```bash
+cd zap-shift-server
+npm install
+npm start
+
+🎯 Future Improvements
+Real-time push notifications via WebSockets
+
+Advanced delivery analytics metrics panel
+
+Dedicated mobile application wrapper
+
+Live GPS rider location tracking map
+
+Automated optimization for delivery scheduling routes
+
+👨‍💻 Developer
+Onnay
+
+LinkedIn: linkedin.com/in/sakibul-huda-onnay
+
+GitHub: github.com/SHOnnay
+
+If you find this project useful, consider giving it a ⭐ on GitHub!
