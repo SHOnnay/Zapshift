@@ -92,5 +92,5 @@ Users can create delivery requests, track parcels in real time, manage shipments
 
 ### 1. Clone Repository
 ```bash
-git clone [https://github.com/SHOnnay/Zapshift.git](https://github.com/SHOnnay/Zapshift.git)
+git clone https://github.com/SHOnnay/Zapshift.git
 cd Zapshift
