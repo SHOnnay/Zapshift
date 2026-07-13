@@ -1,31 +1,44 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 import RootLayout from "../Layouts/RootLayout";
-import Home from "../Pages/Home/Home/Home";
-import Coverage from "../Pages/Coverage/Coverage";
-import AboutUs from "../Pages/AboutUs/AboutUs";
 import AuthLayout from "../Layouts/AuthLayout";
-import Login from "../Pages/Auth/Login/Login";
-import Register from "../Pages/Auth/Register/Register";
-import PrivateRoute from "./PrivateRoute";
-import Rider from "../Pages/Rider/Rider";
-import SendParcel from "../Pages/SendParcel/SendParcel";
 import DashboardLayout from "../Layouts/DashboardLayout";
-import MyParcels from "../Pages/Dashboard/MyParcels/MyParcels";
-import Payment from "../Pages/Dashboard/Payment/Payment";
-import PaymentSuccess from "../Pages/Dashboard/Payment/PaymentSuccess";
-import PaymentCancelled from "../Pages/Dashboard/Payment/PaymentCancelled";
-import PaymentHistory from "../Pages/Dashboard/Payment/PaymentHistory/PaymentHistory";
-import ApproveRiders from "../Pages/Dashboard/ApproveRiders/ApproveRiders";
-import UsersManagement from "../Pages/Dashboard/UsersManagement/UsersManagement";
+import PrivateRoute from "./PrivateRoute";
 import AdminRoutes from "./AdminRoutes";
-import AssignRiders from "../Pages/Dashboard/AssignRiders/AssignRiders";
 import RiderRoute from "./RiderRoute";
-import AssignedDeliveries from "../Pages/AssignedDeliveries/AssignedDeliveries";
-import CompletedDeliveries from "../Pages/Dashboard/CompletedDeliveries/CompletedDeliveries";
-import ParcelTrack from "../Pages/ParcelTrack/ParcelTrack";
-import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 import ErrorPage from "../Components/State/ErrorPage";
+import NotFound from "../Components/State/NotFound";
+import PageLoader from "../Components/State/PageLoader";
+import { serviceCentersLoader } from "./serviceCentersLoader";
 
+// Home is the landing page and loads on first paint regardless, so it stays
+// a regular import. Everything else is lazy-loaded per route.
+import Home from "../Pages/Home/Home/Home";
+
+const Coverage = lazy(() => import("../Pages/Coverage/Coverage"));
+const AboutUs = lazy(() => import("../Pages/AboutUs/AboutUs"));
+const Login = lazy(() => import("../Pages/Auth/Login/Login"));
+const Register = lazy(() => import("../Pages/Auth/Register/Register"));
+const Rider = lazy(() => import("../Pages/Rider/Rider"));
+const SendParcel = lazy(() => import("../Pages/SendParcel/SendParcel"));
+const ParcelTrack = lazy(() => import("../Pages/ParcelTrack/ParcelTrack"));
+
+const DashboardHome = lazy(() => import("../Pages/Dashboard/DashboardHome/DashboardHome"));
+const MyParcels = lazy(() => import("../Pages/Dashboard/MyParcels/MyParcels"));
+const Payment = lazy(() => import("../Pages/Dashboard/Payment/Payment"));
+const PaymentSuccess = lazy(() => import("../Pages/Dashboard/Payment/PaymentSuccess"));
+const PaymentCancelled = lazy(() => import("../Pages/Dashboard/Payment/PaymentCancelled"));
+const PaymentHistory = lazy(() => import("../Pages/Dashboard/Payment/PaymentHistory/PaymentHistory"));
+const ApproveRiders = lazy(() => import("../Pages/Dashboard/ApproveRiders/ApproveRiders"));
+const AssignRiders = lazy(() => import("../Pages/Dashboard/AssignRiders/AssignRiders"));
+const UsersManagement = lazy(() => import("../Pages/Dashboard/UsersManagement/UsersManagement"));
+const AssignedDeliveries = lazy(() => import("../Pages/AssignedDeliveries/AssignedDeliveries"));
+const CompletedDeliveries = lazy(() => import("../Pages/Dashboard/CompletedDeliveries/CompletedDeliveries"));
+
+// Wraps a lazy element with the shared page-level loading fallback.
+const withSuspense = (element) => (
+    <Suspense fallback={<PageLoader />}>{element}</Suspense>
+);
 
 export const router = createBrowserRouter([
     {
@@ -39,28 +52,31 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'rider',
-                element: <PrivateRoute><Rider></Rider></PrivateRoute>,
-                loader: () => fetch('/serviceCenters.json').then(res => res.json())
+                element: <PrivateRoute>{withSuspense(<Rider />)}</PrivateRoute>,
+                loader: serviceCentersLoader
             },
             {
                 path: 'sendparcel',
-                element: <PrivateRoute><SendParcel></SendParcel></PrivateRoute>,
-                loader: () => fetch('/serviceCenters.json').then(res => res.json())
+                element: <PrivateRoute>{withSuspense(<SendParcel />)}</PrivateRoute>,
+                loader: serviceCentersLoader
             },
             {
                 path: '/coverage',
-                Component: Coverage,
-                loader: () => fetch('/serviceCenters.json').then(res => res.json())
+                element: withSuspense(<Coverage />),
+                loader: serviceCentersLoader
             },
             {
                 path: 'parcel-track/:trackingId',
-                Component: ParcelTrack
+                element: withSuspense(<ParcelTrack />)
             },
             {
                 path: '/aboutus',
-                Component: AboutUs
+                element: withSuspense(<AboutUs />)
             },
-
+            {
+                path: '*',
+                Component: NotFound
+            },
         ]
     },
     {
@@ -70,11 +86,11 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: '/login',
-                Component: Login
+                element: withSuspense(<Login />)
             },
             {
                 path: '/register',
-                Component: Register
+                element: withSuspense(<Register />)
             }
         ]
     },
@@ -83,56 +99,62 @@ export const router = createBrowserRouter([
         element: <PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
         errorElement: <ErrorPage />,
         children: [
-            // Add dashboard routes here
             {
                 index: true,
-                Component: DashboardHome,
+                element: withSuspense(<DashboardHome />),
             },
             {
                 path: 'my-parcels',
-                Component: MyParcels,
+                element: withSuspense(<MyParcels />),
             },
             {
                 path: 'payment/:parcelId',
-                Component: Payment,
+                element: withSuspense(<Payment />),
             },
             {
                 path: 'payment-history',
-                Component: PaymentHistory,
+                element: withSuspense(<PaymentHistory />),
             },
             {
                 path: 'payment-success',
-                Component: PaymentSuccess,
+                element: withSuspense(<PaymentSuccess />),
             },
             {
                 path: 'payment-cancelled',
-                Component: PaymentCancelled,
+                element: withSuspense(<PaymentCancelled />),
             },
 
             // Rider only routes
-
             {
                 path: 'assigned-deliveries',
-                element: <RiderRoute><AssignedDeliveries></AssignedDeliveries></RiderRoute>
+                element: <RiderRoute>{withSuspense(<AssignedDeliveries />)}</RiderRoute>
             },
             {
                 path: 'completed-deliveries',
-                element: <RiderRoute><CompletedDeliveries></CompletedDeliveries></RiderRoute>
+                element: <RiderRoute>{withSuspense(<CompletedDeliveries />)}</RiderRoute>
             },
 
-            //admin only routes
+            // Admin only routes
             {
                 path: 'approve-riders',
-                element: <AdminRoutes><ApproveRiders></ApproveRiders></AdminRoutes>
+                element: <AdminRoutes>{withSuspense(<ApproveRiders />)}</AdminRoutes>
             },
             {
                 path: 'assign-riders',
-                element: <AdminRoutes><AssignRiders></AssignRiders></AdminRoutes>
+                element: <AdminRoutes>{withSuspense(<AssignRiders />)}</AdminRoutes>
             },
             {
                 path: 'users-management',
-                element: <AdminRoutes><UsersManagement></UsersManagement></AdminRoutes>
-            }
+                element: <AdminRoutes>{withSuspense(<UsersManagement />)}</AdminRoutes>
+            },
+            {
+                path: '*',
+                Component: NotFound
+            },
         ]
+    },
+    {
+        path: '*',
+        Component: NotFound
     },
 ]);

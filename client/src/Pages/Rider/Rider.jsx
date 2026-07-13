@@ -34,7 +34,6 @@ const Rider = () => {
     });
 
     const handleRiderApplication = (data) => {
-        console.log(data);
         axiosSecure.post('/riders', data)
             .then(res => {
                 if (res.data.insertedId) {
@@ -58,7 +57,7 @@ const Rider = () => {
                 }
             })
             .catch(error => {
-                console.log('error submitting rider application', error);
+                console.error('Error submitting rider application:', error);
             })
     }
 

@@ -16,7 +16,6 @@ const Coverage = () => {
 
         if (district) {
             const coords = [district.latitude, district.longitude];
-            console.log('Found district:', district.district, 'at coordinates:', coords);
             // going to the location on the map
             mapRef.current.flyTo(coords, 14);
             // can also use setView() same ouptut

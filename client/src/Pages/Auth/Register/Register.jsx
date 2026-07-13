@@ -42,7 +42,7 @@ const Register = () => {
             await updateUserProfile({ displayName: data.name, photoURL });
             navigation(location.state || '/');
         } catch (error) {
-            console.log(error.message);
+            console.error('Registration error:', error.message);
         }
     };
 

@@ -59,7 +59,6 @@ const SendParcel = () => {
             }
         }
 
-        console.log("total cost:", cost);
         data.cost = cost;
 
         Swal.fire({
@@ -76,7 +75,6 @@ const SendParcel = () => {
                 //save to the database
                 axiosSecure.post('/parcels', { ...data })
                     .then(res => {
-                        console.log('After parcel booking', res.data);
                         if (res.data.insertedId) {
                             navigate('/dashboard/my-parcels');
                             Swal.fire({

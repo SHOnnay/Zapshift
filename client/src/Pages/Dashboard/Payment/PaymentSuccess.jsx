@@ -9,12 +9,9 @@ const PaymentSuccess = () => {
     const sessionId = searchParams.get('session_id');
     const axiosSecure = useAxiosSecure();
 
-    console.log('Payment successful for session ID:', sessionId);
-
     useEffect(() => {
         if (sessionId) {
             axiosSecure.patch(`/payment-success?session_id=${sessionId}`).then(res => {
-                console.log('Payment success updated on server:', res.data);
                 setPaymentInfo({
                     transactionId: res.data.transactionId,
                     trackingId: res.data.trackingId,
